@@ -3,35 +3,43 @@
 <meta charset="utf-8">
 <style> /* set the CSS */
 
-body { font: 12px Arial;}
+    body { font: 12px arial;}
 
-path { 
-    stroke: steelblue;
-    stroke-width: 2;
-    fill: none;
-}
+    path { 
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
 
-svg {
-	display: inline;
-	margin: 0 auto;
-}
+    svg {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+    }
 
-h1 {
-	display: inline;
-}
+    h1 {
+            text-display: center;
+    }
 
-.axis path,
-.axis line {
-    fill: none;
-    stroke: grey;
-    stroke-width: 1;
-    shape-rendering: crispEdges;
-}
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+    
+    .container {
+        margin: 0 auto;
+        text-align: center;
+    }
 
 </style>
 <body>
-<h1>AAAAA</h1>
-
+<div class="container">
+<h1>LIGHT MEASURES</h1>
+<br>
+<div class="container">
 <!-- load the d3.js library -->    
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <!-- load our code -->
@@ -132,11 +140,23 @@ h1 {
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
+        svg.append("text")      // text label for the x axis
+            .attr("x", 265 )
+            .attr("y", 240 )
+            .style("text-anchor", "middle")
+            .text("Date"); 
 
         // Add the Y Axis
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis);
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Value");
     }
 
     var socket = new WebSocket("ws://192.168.1.118:3000/ws");
@@ -165,5 +185,7 @@ h1 {
     draw(data);
 
 </script>
+</div>
+</div>
 </body>
 </html>

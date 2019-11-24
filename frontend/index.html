@@ -23,7 +23,9 @@
 		  margin: 8px 0;
 		  border: none;
 		  cursor: pointer;
-		  width: 100%;
+		  width: 25%;
+                  margin: 10px 37%;
+                  position: relative;
 		}
 
 		/* Add a hover effect for buttons */
@@ -33,13 +35,11 @@
 
 		/* Extra style for the cancel button (red) */
 		.cancelbtn {
-		  width: auto;
 		  padding: 10px 18px;
 		  background-color: #f44336;
 		}
 		/* Guest button */
 		.guestbtn {
-		  width: auto;
 		  padding: 10px 18px;
 		  background-color: #cccccc;
 		}
@@ -48,7 +48,10 @@
 		/* Add padding to containers */
 		.container {
 		  padding: 16px;
+                  margin: auto;
+                  text-align: center;
 		}
+                
 	</style>
     <head>
         <title>Login page</title>
@@ -61,17 +64,21 @@
 
 		<form action="/login" method="post">
 		<div class="container">
-		<label for="uname"><b>Username</b></label>
-		<input type="text" placeholder="Enter Username" name="userid" required>
-
-		<label for="psw"><b>Password</b></label>
-		<input type="password" placeholder="Enter Password" name="pswrd" required>
-
+                <table style="margin:0 auto;">
+                    <tr>
+                        <td><label for="uname"><b>Username</b></label></td>
+                        <td><input type="text" placeholder="Enter Username" name="userid" required></td>
+                    </tr>
+                    <tr>
+                        <td><label for="psw"><b>Password</b></label></td>
+                        <td><input type="password" placeholder="Enter Password" name="pswrd" required></td>
+                </tr>
+                </table>
 		<button type="submit">Login</button>
 		</div>
 
 		<div class="container" style="background-color:#f1f1f1">
-		<button type="reset" class="cancelbtn">Cancel</button>
+                    <button type="reset" class="cancelbtn">Cancel</button>
 		</div>
 		</form>
 
