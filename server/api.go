@@ -48,7 +48,7 @@ func apiRecieveDataEndpoint(w http.ResponseWriter, r *http.Request) {
 		log.Print("Error was: ", err.Error())
 		return
 	}
-	log.Print(bytesToSend)
+	log.Print(string(bytesToSend))
 	// parse into ApiData
 	var newData ApiData
 	err = json.Unmarshal(bytesToSend, &newData)
@@ -59,17 +59,19 @@ func apiRecieveDataEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	var entry WsData
 	//for each sample, insert into database, notify current clients of new samples
+	var entryArray []WsData
 	for i, v := range newData.Samples {
 		var toSend []byte
-		entry.Timestamp = t.Add(time.Duration(20-i)*30*time.Second).String()
+		entry.Timestamp = t.Add(time.Duration(20-i)*-4*time.Second).String()
 		entry.Value = v
-		dbEntryInsert(database, entry)
 		toSend, _ = json.Marshal(&entry)
+		log.Print(string(toSend))
 		for _, cl := range clients{
-			log.Print(string(toSend))
 			cl.writeChannel <- string(toSend)
 		}
+		entryArray = append(entryArray, entry)
 	}
+	dbEntryInsert(database, entryArray)
 
 	//if newData.Samples[0] < 500 {
 	//	openPowerSocket()

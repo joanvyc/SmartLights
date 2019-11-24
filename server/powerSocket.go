@@ -9,7 +9,7 @@ import (
 func openPowerSocket(){
 	resp, err := http.Get(path.Join("https://maker.ifttt.com/trigger/open/with/key/", IFTT_KEY))
 	if err != nil {
-		log.Print("Error on openning power socket.")
+		log.Print("Error on openning power writeSocket.")
 		log.Print("Error was: ", err.Error())
 		return
 	}
@@ -20,7 +20,7 @@ func openPowerSocket(){
 func closePowerSocket(){
 	resp, err := http.Get(path.Join("https://maker.ifttt.com/trigger/close/with/key/", IFTT_KEY))
 	if err != nil {
-		log.Print("Error on closing power socket.")
+		log.Print("Error on closing power writeSocket.")
 		log.Print("Error was: ", err.Error())
 		return
 	}

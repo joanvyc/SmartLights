@@ -29,6 +29,9 @@ h1 {
 }
 
 </style>
+<head>
+    <title> Graph </title>
+</head>
 <body>
 <h1>AAAAA</h1>
 
@@ -43,7 +46,7 @@ h1 {
 
     // Parse the date / time
    // var parseDate = d3.time.format("%d-%b-%y-%H:%M.%S").parse;
-    var parseDate = d3.time.format("%y-%d-%m-%H:%M:%S").parse;
+    var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
     // Set the ranges
     var x = d3.time.scale().range([0, width]);
@@ -94,29 +97,7 @@ h1 {
     }
     // Get the data
 
-    var data =
-        [{date: "10-Apr-12-10:20.12",value: 58.13},
-            {date: "10-Apr-12-10:24.12",value: 53.98},
-            {date: "10-Apr-12-10:28.12",value: 67.00},
-            {date: "10-Apr-12-10:30.12",value: 89.70},
-            {date: "10-Apr-12-10:31.12",value: 99.00},
-            {date: "10-Apr-12-10:34.12",value: 130.28},
-            {date: "10-Apr-12-10:39.12",value: 166.70},
-            {date: "10-Apr-12-10:47.12",value: 234.98},
-            {date: "10-Apr-12-10:48.12",value: 345.44},
-            {date: "10-Apr-12-11:30.12",value: 443.34},
-            {date: "10-Apr-12-12:25.12",value: 543.70},
-            {date: "10-Apr-12-12:25.12",value: 580.13},
-            {date: "10-Apr-12-12:26.12",value: 605.23},
-            {date: "10-Apr-12-12:27.12",value: 622.77},
-            {date: "10-Apr-12-12:29.12",value: 626.20},
-            {date: "10-Apr-12-12:32.12",value: 628.44},
-            {date: "10-Apr-12-12:35.12",value: 636.23},
-            {date: "10-Apr-12-12:36.12",value: 633.68},
-            {date: "10-Apr-12-12:38.12",value: 624.31},
-            {date: "10-Apr-12-12:44.12",value: 629.32},
-            {date: "10-Apr-12-12:46.12",value: 618.63}]
-    data.forEach(function(d) { d.date = parseDate(d.date);})
+    var data = [];
 
     function draw(data) {
         x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -141,20 +122,57 @@ h1 {
 
     var socket = new WebSocket("ws://192.168.1.118:3000/ws");
 
+    function ping() {
+        socket.send('ping');
+        tm = setTimeout(function () {
+
+            console.log("Se serro we")
+
+        }, 5000);
+    }
+
+    function pong() {
+        clearTimeout(tm);
+    }
+
     socket.onopen = function(event) {
         console.log("Socket opened.");
-    }
+        setInterval(ping, 30000);
+    };
+
+    socket.onclose = function(event){
+        console.log(event.code)
+        console.log(event.reason)
+    };
 
     socket.onerror = function(error) {
         console.log("Something went wrong! Log: " + error.message);
-    }
+    };
 
     socket.onmessage = function(event) {
-        var data = JSON.stringify(eval("(" + event.data + ")"));
-        data.push({
-            date: parseDate(data.timestamp.split("."))[0],
-            value: data.value
-        })
+        if( event.data === "pong" ){
+            pong();
+            return
+        }
+        try {
+            var d = JSON.parse(event.data);
+            console.log(d);
+            console.log("data")
+            data.push({
+                date: parseDate(d.timestamp.split(".")[0]),
+                value: d.value
+            });
+            console.log(data);
+            flushSvg();
+            if (data.length < 50){
+                draw(data)
+            }else{
+                draw(data.slice(data.length-50, data.length))
+            }
+        } catch(error){
+            console.log("Error parsing JSON");
+            console.log(error)
+        }
         //socketData = parse (event.data)
         /*for each (var item in socketData)
         {
@@ -162,7 +180,7 @@ h1 {
         }*/
     }
 
-    draw(data);
+    //draw(data);
 
 </script>
 </body>
