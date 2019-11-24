@@ -34,6 +34,33 @@
         text-align: center;
     }
 
+		/* Set a style for all buttons */
+		button {
+		  background-color: #4CAF50;
+		  color: white;
+		  padding: 14px 20px;
+		  margin: 8px 0;
+		  border: none;
+		  cursor: pointer;
+                  margin: 10px 37%;
+                  position: relative;
+		}
+
+		/* Add a hover effect for buttons */
+		button:hover {
+		  opacity: 0.8;
+		}
+
+		/* Extra style for the cancel button (red) */
+		.offbtn {
+		  background-color: #f44336;
+		}
+		/* Guest button */
+		.autobtn {
+		  background-color: #59bfd4;
+		}
+		.
+
 </style>
 <head>
     <title> Graph </title>
@@ -205,14 +232,26 @@
 </script>
 </div>
 </div>
-<form action="/open" method="post">
-    <button type="submit">Open</button>
-</form>
-<form action="/close" method="post">
-    <button type="submit">Close</button>
-</form>
-<form action="/auto" method="post">
-    <button type="submit">Auto</button>
-</form>
+<div class="container">
+<table style="margin:0 auto;">
+    <tr>
+        <td>
+            <form action="/open" method="post">
+                <button type="submit">Open</button>
+            </form>
+        </td>
+        <td>
+            <form action="/close" method="post">
+                <button class="offbtn" type="submit">Close</button>
+            </form>
+        </td>
+        <td>
+            <form action="/auto" method="post">
+                <button class="autobtn" type="submit">Auto</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</div>
 </body>
 </html>
