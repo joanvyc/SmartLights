@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+
+    body { font: 12px arial;}
+
+    path { 
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    svg {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+    }
+
+    h1 {
+            text-display: center;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+    
+    .container {
+        margin: 0 auto;
+        text-align: center;
+    }
+
+</style>
+<head>
+    <title> Graph </title>
+</head>
+<body>
+<div class="container">
+<h1>LIGHT MEASURES</h1>
+<br>
+<div class="container">
+<!-- load the d3.js library -->    
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<!-- load our code -->
+<script>
+    // Set the dimensions of the canvas / graph
+    var margin = {top: 30, right: 20, bottom: 30, left: 50};
+    var width  = 600 - margin.left - margin.right;
+    var height = 270 - margin.top - margin.bottom;
+
+    // Parse the date / time
+   // var parseDate = d3.time.format("%d-%b-%y-%H:%M.%S").parse;
+    var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+
+    // Set the ranges
+    var x = d3.time.scale().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+    // Define the axes
+    var xAxis = d3.svg.axis().scale(x)
+        .orient("bottom").ticks(5);
+
+    var yAxis = d3.svg.axis().scale(y)
+        .orient("left").ticks(5);
+
+    var lastDate = null;
+
+    // Define the line
+    var valueline = d3.svg.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d.value); })
+        .defined(function(d) {
+            if ( lastDate === null ) {
+                visible = true;
+            } else {
+                visible = (d.date - lastDate) < (15 * 60 * 1000);
+            }
+            lastDate = d.date;
+            return visible;
+            //return true;
+        });
+
+    // Adds the svg canvas
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    function flushSvg() {
+        d3.select("svg").remove()
+        svg = d3.select("body")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+    }
+    // Get the data
+
+    var data = [];
+
+    function draw(data) {
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+        // Add the valueline path.
+        svg.append("path")
+            .attr("class", "line")
+            .attr("d", valueline(data));
+
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+        svg.append("text")      // text label for the x axis
+            .attr("x", 265 )
+            .attr("y", 240 )
+            .style("text-anchor", "middle")
+            .text("Date"); 
+
+        // Add the Y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Value");
+    }
+
+    var socket = new WebSocket("ws://192.168.1.118:3000/ws");
+
+    function ping() {
+        socket.send('ping');
+        tm = setTimeout(function () {
+
+            console.log("Se serro we")
+
+        }, 5000);
+    }
+
+    function pong() {
+        clearTimeout(tm);
+    }
+
+    socket.onopen = function(event) {
+        console.log("Socket opened.");
+        setInterval(ping, 30000);
+    };
+
+    socket.onclose = function(event){
+        console.log(event.code)
+        console.log(event.reason)
+    };
+
+    socket.onerror = function(error) {
+        console.log("Something went wrong! Log: " + error.message);
+    };
+
+    socket.onmessage = function(event) {
+        if( event.data === "pong" ){
+            pong();
+            return
+        }
+        try {
+            var d = JSON.parse(event.data);
+            console.log(d);
+            console.log("data")
+            data.push({
+                date: parseDate(d.timestamp.split(".")[0]),
+                value: d.value
+            });
+            console.log(data);
+            flushSvg();
+            if (data.length < 50){
+                draw(data)
+            }else{
+                draw(data.slice(data.length-50, data.length))
+            }
+        } catch(error){
+            console.log("Error parsing JSON");
+            console.log(error)
+        }
+        //socketData = parse (event.data)
+        /*for each (var item in socketData)
+        {
+            data.push({date: parseDate(""), value: 0.0})
+        }*/
+    }
+
+    //draw(data);
+
+</script>
+</div>
+</div>
+<form action="/open" method="post">
+    <button type="submit">Open</button>
+</form>
+<form action="/close" method="post">
+    <button type="submit">Close</button>
+</form>
+<form action="/auto" method="post">
+    <button type="submit">Auto</button>
+</form>
+</body>
+</html>

@@ -1,30 +1,18 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"path"
+	"os/exec"
 )
 
 func openPowerSocket(){
-	resp, err := http.Get(path.Join("https://maker.ifttt.com/trigger/open/with/key/", IFTT_KEY))
-	if err != nil {
-		log.Print("Error on openning power writeSocket.")
-		log.Print("Error was: ", err.Error())
-		return
-	}
-
-	log.Print(resp.StatusCode)
+	var path string = "https://maker.ifttt.com/trigger/open/with/key/" + IFTT_KEY
+	cmd := exec.Command("curl", "-X", "GET", path)
+	_ = cmd.Run()
 }
 
 func closePowerSocket(){
-	resp, err := http.Get(path.Join("https://maker.ifttt.com/trigger/close/with/key/", IFTT_KEY))
-	if err != nil {
-		log.Print("Error on closing power writeSocket.")
-		log.Print("Error was: ", err.Error())
-		return
-	}
-
-	log.Print(resp.StatusCode)
+	var path string = "https://maker.ifttt.com/trigger/close/with/key/" + IFTT_KEY
+	cmd := exec.Command("curl", "-X", "GET", path)
+	_ = cmd.Run()
 }
 

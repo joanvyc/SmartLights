@@ -88,7 +88,7 @@ func clientLogin(w http.ResponseWriter, r *http.Request){
 	}
 
 	if userExists(r.PostFormValue("userid"), r.PostFormValue("pswrd")) {
-		http.ServeFile(w, r, PROJECT_FOLDER + "/frontend/graph.html")
+		http.ServeFile(w, r, PROJECT_FOLDER + "/frontend/graphLogged.html")
 
 	}else{
 		http.ServeFile(w, r, PROJECT_FOLDER + "/frontend/index.html")
@@ -96,7 +96,24 @@ func clientLogin(w http.ResponseWriter, r *http.Request){
 
 }
 
+func clientGuest(w http.ResponseWriter, r *http.Request){
+	http.ServeFile(w, r, PROJECT_FOLDER + "/frontend/graph.html")
+}
+
 func clientServeLogin(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, PROJECT_FOLDER + "/frontend//index.html")
 }
 
+func clientOpen(w http.ResponseWriter, r *http.Request) {
+	MODE = 0
+	openPowerSocket()
+}
+
+func clientClose(w http.ResponseWriter, r *http.Request) {
+	MODE = 1
+	closePowerSocket()
+}
+
+func clientAuto(w http.ResponseWriter, r *http.Request) {
+	MODE = 2
+}

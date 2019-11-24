@@ -62,7 +62,7 @@ func apiRecieveDataEndpoint(w http.ResponseWriter, r *http.Request) {
 	var entryArray []WsData
 	for i, v := range newData.Samples {
 		var toSend []byte
-		entry.Timestamp = t.Add(time.Duration(20-i)*-4*time.Second).String()
+		entry.Timestamp = t.Add(time.Duration(20-i)*-2*time.Second).String()
 		entry.Value = v
 		toSend, _ = json.Marshal(&entry)
 		log.Print(string(toSend))
@@ -73,10 +73,10 @@ func apiRecieveDataEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	dbEntryInsert(database, entryArray)
 
-	//if newData.Samples[0] < 500 {
-	//	openPowerSocket()
-	//}else{
-	//	closePowerSocket()
-	//}
+	if MODE == 2 && newData.Samples[19] < 700 {
+		openPowerSocket()
+	}else if MODE == 2{
+		closePowerSocket()
+	}
 
 }
